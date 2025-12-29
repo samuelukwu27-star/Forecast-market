@@ -1,0 +1,55 @@
+name: 🔮 2026 Futures Forecast (Real Data)
+
+on:
+  workflow_dispatch:  # Manual trigger
+  # schedule:
+  #   - cron: '0 8 1 * *'  # Monthly
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    env:
+      MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Setup Go
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      # Setup Python
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Install deps
+      - name: Install Python packages
+        run: pip install pandas numpy
+
+      # Fetch real futures data
+      - name: Fetch real NQ/ES data from Massive
+        run: |
+          go mod init forecast
+          go get github.com/massive-com/client-go/v2/rest@latest
+          go mod tidy
+          go run fetch_futures.go
+
+      # Run forecast
+      - name: Run 2026 Monte Carlo forecast
+        run: python forecast_2026.py
+
+      # Upload results
+      - name: Upload forecast artifacts
+        uses: actions/upload-artifact@v4  # ✅ v4 — required after Jan 30, 2025
+        with:
+          name: 2026-forecast-${{ github.run_number }}
+          path: |
+            FORECAST_REPORT.md
+            historical_spreads.csv
+            2026_forecast.csv
+            NQ_2024_2025.csv
+            ES_2024_2025.csv
