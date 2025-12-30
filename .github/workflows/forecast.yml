@@ -33,8 +33,6 @@ jobs:
       # Fetch real futures data
       - name: Fetch real NQ/ES data from Massive
         run: |
-          go mod init forecast
-          go get github.com/massive-com/client-go/v2/rest@latest
           go mod tidy
           go run fetch_futures.go
 
