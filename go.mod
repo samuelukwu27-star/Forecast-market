@@ -2,8 +2,7 @@ module forecast
 
 go 1.20
 
-require github.com/massive-com/client-go/v2 v2.23.0
-
+require github.com/massive-com/client-go/v2 v2.22.0
 // Required transitive dependencies (auto-filled by `go mod tidy`)
 require (
 	github.com/google/uuid v1.6.0
